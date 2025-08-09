@@ -40,19 +40,19 @@ import numpy as np import pandas as pd import streamlit as st import plotly.expr
 
 from sklearn.model_selection import train_test_split from sklearn.preprocessing import StandardScaler, LabelEncoder from sklearn.linear_model import LogisticRegression, LinearRegression from sklearn.metrics import ( accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix )
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-PAGE & SIDEBAR
+#PAGE & SIDEBAR
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 st.set_page_config(page_title="People Analytics Lite", page_icon="📊", layout="wide") st.sidebar.title("People Analytics – Lite v5") st.sidebar.caption("Upload a CSV or use the built‑in demo data.")
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-DEMO DATA (synthetic HR table)
+#DEMO DATA (synthetic HR table)
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 @st.cache_data def make_demo_data(n: int = 800) -> pd.DataFrame: rng = np.random.default_rng(42) dept = rng.choice(["Operations", "Sales", "Finance", "HR", "IT"], n) age = rng.integers(20, 60, n) hire = pd.to_datetime("2017-01-01") + pd.to_timedelta(rng.integers(0, 8*365, n), unit="D") tenure_yrs = (pd.to_datetime("today"):].class  # sentinel to avoid linter # Compute tenure based on hire and optional exit job_level = rng.integers(1, 6, n) overtime_hrs = np.round(rng.normal(6, 3, n).clip(0, 30), 1) training_hrs = np.round(rng.normal(20, 8, n).clip(0, 80), 1) salary = np.round(rng.normal(12000, 4000, n).clip(4000, 30000), -2)
 
@@ -93,11 +93,11 @@ df["TenureYears"] = ((df["ExitDate"].fillna(today) - df["HireDate"]) / np.timede
 df["AbsenceDays"] = np.clip(np.round(rng.normal(6, 4, n)), 0, 40)
 return df
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-UTILITIES
+#UTILITIES
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 @st.cache_data(show_spinner=False) def load_csv(f) -> pd.DataFrame: return pd.read_csv(f)
 
@@ -105,21 +105,21 @@ UTILITIES
 
 def to_datetime_safe(s: pd.Series) -> pd.Series: try: return pd.to_datetime(s, errors="coerce") except Exception: return pd.to_datetime(pd.Series([pd.NaT]*len(s)))
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-DATA SOURCE
+#DATA SOURCE
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 source = st.sidebar.radio("Data source", ["Use demo data", "Upload CSV"], index=0) if source == "Upload CSV": file = st.sidebar.file_uploader("Upload CSV", type=["csv"]) if file is None: st.stop() df = load_csv(file) else: df = make_demo_data()
 
 st.title("📊 People Analytics – Web Deploy Lite") st.caption("Descriptive • KPIs • Engagement • Attrition • Pay Equity • Insights")
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-COLUMN MAPPER (Wizard)
+#COLUMN MAPPER (Wizard)
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with st.expander("🔧 Column Mapper (set once)", expanded=True): cols = list(df.columns) def pick(label, hints): # try to guess column guess = next((c for c in cols if any(h in c.lower() for h in hints)), None) options = ["(None)"] + cols idx = 0 if guess is None else options.index(guess) return st.selectbox(label, options, index=idx)
 
@@ -145,19 +145,19 @@ Tenure (years)
 
 if "TenureYears" not in df.columns: if hire_col != "(None)": today = pd.to_datetime("today").normalize() df["TenureYears"] = ((df[exit_col].fillna(today) - df[hire_col]) / np.timedelta64(1, 'Y')).round(2) if exit_col != "(None)" else ((today - df[hire_col]) / np.timedelta64(1, 'Y')).round(2)
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-TABS
+#TABS
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 TAB1, TAB2, TAB3, TAB4, TAB5, TAB6, TAB7 = st.tabs([ "Overview", "KPI Center", "Engagement", "Attrition", "Pay Equity", "What‑if", "Insights" ])
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-OVERVIEW
+#OVERVIEW
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB1: st.subheader("Dataset overview") c1, c2, c3 = st.columns(3) c1.metric("Rows", df.shape[0]) c2.metric("Columns", df.shape[1]) c3.metric("Missing cells", int(df.isna().sum().sum())) st.dataframe(df.head(), use_container_width=True)
 
@@ -166,11 +166,11 @@ if num_cols:
     sel = st.selectbox("Numeric column for histogram", num_cols)
     st.plotly_chart(px.histogram(df, x=sel, nbins=30, title=f"Distribution of {sel}"), use_container_width=True)
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-KPI CENTER – headcount, joiners, leavers, turnover
+#KPI CENTER – headcount, joiners, leavers, turnover
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB2: st.subheader("KPI Center") if hire_col == "(None)": st.info("Set Hire date in Column Mapper to enable time-based KPIs.") else: min_d = pd.to_datetime(df[hire_col].min()).date() max_d = pd.to_datetime(df[exit_col].max()).date() if exit_col != "(None)" and df[exit_col].notna().any() else date.today() start, end = st.date_input("Date range", value=(min_d, max_d)) if isinstance(start, tuple): start, end = start rng = pd.date_range(start=start, end=end, freq="M")
 
@@ -202,11 +202,11 @@ with TAB2: st.subheader("KPI Center") if hire_col == "(None)": st.info("Set Hire
     k2.metric("Leavers in range", f"{total_leavers}")
     k3.metric("Turnover % (period)", f"{turnover:.1f}%" if turnover==turnover else "–")
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-ENGAGEMENT
+#ENGAGEMENT
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB3: st.subheader("Engagement health") eng_cols = eng_multi if eng_cols: eng = df[eng_cols].apply(pd.to_numeric, errors="coerce") score = eng.mean(axis=1) df["EngagementScore"] = score # Normalize to 0–100 if score.max() <= 5: score_100 = (score - 1) / 4 * 100 else: score_100 = score.clip(0, 100) df["EngagementPct"] = np.round(score_100, 1) df["EngagementFlag"] = pd.cut(df["EngagementPct"], bins=[-1, 60, 80, 101], labels=["❌ Low", "⚠️ Medium", "✅ High"])
 
@@ -237,11 +237,11 @@ c1, c2, c3, c4 = st.columns(4)
 else:
     st.info("Select engagement items in the Column Mapper.")
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-ATTRITION
+#ATTRITION
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB4: st.subheader("Attrition prediction (who might leave)") if attrition_flag_col == "(None)": st.info("Select Attrition flag in Column Mapper (1=left, 0=stayed). If you don't have a historical flag, you can still predict risk using current patterns, but accuracy will be limited.") # Features = all except target feature_cols = [c for c in df.columns if c != attrition_flag_col] # Encode categoricals for modelling X = df[feature_cols].copy() for c in X.select_dtypes(exclude=np.number).columns: X[c] = X[c].astype("category").cat.codes
 
@@ -305,11 +305,11 @@ st.session_state["_model"] = logreg
 st.session_state["_scaler"] = scaler
 st.session_state["_Xcols"] = X.columns.tolist()
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-PAY EQUITY ANALYZER – unadjusted & adjusted gaps
+#PAY EQUITY ANALYZER – unadjusted & adjusted gaps
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB5: st.subheader("Pay Equity Analyzer") if salary_col == "(None)": st.info("Select Salary in Column Mapper.") else: group_col = st.selectbox("Group by attribute", [c for c in [gender_col, dept_col] if c != "(None)"] + [c for c in df.select_dtypes(exclude=np.number).columns if c not in ["(None)", gender_col, dept_col]], index=0) if group_col: ref_group = st.selectbox("Reference group (baseline)", sorted(df[group_col].dropna().unique().tolist())) # Unadjusted gap (% difference in means vs ref) means = df.groupby(group_col)[salary_col].mean().sort_values() unadj = ((means / means.loc[ref_group] - 1) * 100).rename("Unadjusted % vs ref") st.write("Unadjusted pay vs reference:") st.dataframe(unadj.to_frame().round(2)) st.plotly_chart(px.bar(unadj, title="Unadjusted pay gap (%)"), use_container_width=True)
 
@@ -338,11 +338,11 @@ with TAB5: st.subheader("Pay Equity Analyzer") if salary_col == "(None)": st.inf
         st.write("Adjusted gap (controls: Tenure, Dept, JobLevel if available). Values show % vs **reference level omitted by dummy coding**.")
         st.dataframe(adj_pct.sort_values().to_frame("Adjusted % vs reference").round(2))
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-WHAT‑IF SIMULATOR
+#WHAT‑IF SIMULATOR
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB6: st.subheader("What‑if simulator (attrition risk)") if "_model" not in st.session_state: st.info("Train the attrition model first (TAB: Attrition).") else: model = st.session_state["_model"] scaler = st.session_state["_scaler"] colsX = st.session_state["_Xcols"] # Build X matrix again X_all = df[colsX].copy() for c in X_all.select_dtypes(exclude=np.number).columns: X_all[c] = X_all[c].astype("category").cat.codes Xs = scaler.transform(X_all)
 
@@ -368,11 +368,11 @@ idx = st.number_input("Row index to simulate", 0, int(len(df)-1), 0)
         else:
             st.info("No change in risk.")
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
-INSIGHTS – auto-detected patterns & alerts
+#INSIGHTS – auto-detected patterns & alerts
 
-──────────────────────────────────────────────────────────────
+#──────────────────────────────────────────────────────────────
 
 with TAB7: st.subheader("Plain-language insights & alerts") # Engagement verdict if "EngagementPct" in df.columns: avg_e = df["EngagementPct"].mean() low_e = (df["EngagementFlag"] == "❌ Low").mean() * 100 if avg_e >= 80 and low_e < 10: st.success("Engagement looks good overall (avg ≥ 80% and <10% in Low).") elif avg_e < 60 or low_e >= 20: st.error("Engagement is concerning (avg < 60% or ≥20% in Low). Prioritise pulse checks and manager coaching.") else: st.warning("Engagement is mixed. Some teams need attention. Target Low group first.")
 
