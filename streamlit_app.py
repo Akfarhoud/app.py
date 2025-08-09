@@ -384,7 +384,6 @@ with TAB5:
 
             # Adjusted gap using linear regression on log(salary)
             work = df[[salary_col, group_col]].copy().dropna()
-            work = work.join(df[["TenureYears", job] for job in []], how='left')  # no-op; placeholder
             X = pd.get_dummies(df[[group_col, dept_col] if dept_col != "(None)" else [group_col]], drop_first=False).fillna(0)
             # Set reference group by dropping its column set
             drop_cols = [c for c in X.columns if c.startswith(f"{group_col}_") and c != f"{group_col}_{ref_group}"]
