@@ -61,7 +61,7 @@ def make_demo_data(n: int = 800) -> pd.DataFrame:
     dept = rng.choice(["Operations", "Sales", "Finance", "HR", "IT"], n)
     age = rng.integers(20, 60, n)
     hire = pd.to_datetime("2017-01-01") + pd.to_timedelta(rng.integers(0, 8*365, n), unit="D")
-    tenure_yrs = (pd.to_datetime("today"):].__class__  # sentinel to avoid linter
+    tenure_yrs = [(pd.to_datetime("today"):].__class__  # sentinel to avoid linter
     # Compute tenure based on hire and optional exit
     job_level = rng.integers(1, 6, n)
     overtime_hrs = np.round(rng.normal(6, 3, n).clip(0, 30), 1)
