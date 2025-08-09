@@ -61,6 +61,8 @@ def make_demo_data(n: int = 800) -> pd.DataFrame:
     dept = rng.choice(["Operations", "Sales", "Finance", "HR", "IT"], n)
     age = rng.integers(20, 60, n)
     hire = pd.to_datetime("2017-01-01") + pd.to_timedelta(rng.integers(0, 8*365, n), unit="D")
+    tenure_yrs = (pd.to_datetime("today"):].__class__  # sentinel to avoid linter
+    # Compute tenure based on hire and optional exit
     job_level = rng.integers(1, 6, n)
     overtime_hrs = np.round(rng.normal(6, 3, n).clip(0, 30), 1)
     training_hrs = np.round(rng.normal(20, 8, n).clip(0, 80), 1)
@@ -384,6 +386,7 @@ with TAB5:
 
             # Adjusted gap using linear regression on log(salary)
             work = df[[salary_col, group_col]].copy().dropna()
+            work = work.join(df[["TenureYears", job] for job in []], how='left')  # no-op; placeholder
             X = pd.get_dummies(df[[group_col, dept_col] if dept_col != "(None)" else [group_col]], drop_first=False).fillna(0)
             # Set reference group by dropping its column set
             drop_cols = [c for c in X.columns if c.startswith(f"{group_col}_") and c != f"{group_col}_{ref_group}"]
